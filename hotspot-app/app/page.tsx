@@ -10,6 +10,7 @@ interface Country {
   copy: ReactNode;
   position: { top: string; left: string };
   mobilePosition?: { top: string; left: string };
+  tabletPosition?: { top: string; left: string };
   flag: string;
   region: string;
   highlight: string;
@@ -44,7 +45,8 @@ const countries: Country[] = [
       </div>
     ),
     position: { top: "89%", left: "64%" },
-    mobilePosition: { top: "68%", left: "67%" },
+    tabletPosition: { top: "90%", left: "63%" },
+    mobilePosition: { top: "77%", left: "67%" },
     flag: "/flags/ZA.png",
     region: "Southern Africa",
     highlight: "Mountain",
@@ -131,7 +133,7 @@ const countries: Country[] = [
     
     ),
     position: { top: "75%", left: "71%" },
-    mobilePosition: { top: "73%", left: "72%" },
+    mobilePosition: { top: "68%", left: "72%" },
     flag: "/flags/ZW.png",
     region: "Southern Africa",
     highlight: "Waterfall",
@@ -170,7 +172,8 @@ const countries: Country[] = [
 export default function Home() {
   const [selectedCountry, setSelectedCountry] = useState<number>(1);
   const [isMobileInfoModalOpen, setIsMobileInfoModalOpen] = useState(false);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [isPhoneViewport, setIsPhoneViewport] = useState(false);
+  const [isTabletViewport, setIsTabletViewport] = useState(false);
   const [regionFilter, setRegionFilter] = useState("All");
   const [highlightFilter, setHighlightFilter] = useState("All");
   const [searchFilter, setSearchFilter] = useState("");
@@ -179,7 +182,7 @@ export default function Home() {
 
   const handleHotspotClick = (countryId: number) => {
     setSelectedCountry(countryId);
-    if (isMobileViewport) {
+    if (isPhoneViewport) {
       setIsMobileInfoModalOpen(true);
     }
   };
@@ -238,28 +241,39 @@ export default function Home() {
   }, [selectedCountry]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1023px)");
-    const syncViewport = () => setIsMobileViewport(mediaQuery.matches);
+    const phoneQuery = window.matchMedia("(max-width: 767px)");
+    const tabletQuery = window.matchMedia("(min-width: 768px) and (max-width: 1023px)");
+    const syncViewport = () => {
+      setIsPhoneViewport(phoneQuery.matches);
+      setIsTabletViewport(tabletQuery.matches);
+    };
     syncViewport();
-    mediaQuery.addEventListener("change", syncViewport);
-    return () => mediaQuery.removeEventListener("change", syncViewport);
+    phoneQuery.addEventListener("change", syncViewport);
+    tabletQuery.addEventListener("change", syncViewport);
+    return () => {
+      phoneQuery.removeEventListener("change", syncViewport);
+      tabletQuery.removeEventListener("change", syncViewport);
+    };
   }, []);
 
   useEffect(() => {
-    if (!isMobileViewport && isMobileInfoModalOpen) {
+    if (!isPhoneViewport && isMobileInfoModalOpen) {
       setIsMobileInfoModalOpen(false);
     }
-  }, [isMobileViewport, isMobileInfoModalOpen]);
+  }, [isPhoneViewport, isMobileInfoModalOpen]);
 
  
   useEffect(() => {
-    if (!isMobileViewport || !isMobileInfoModalOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isMobileInfoModalOpen, isMobileViewport]);
+    if (isPhoneViewport && isMobileInfoModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+
+    document.body.style.overflow = "";
+  }, [isMobileInfoModalOpen, isPhoneViewport]);
 
   const selectedIndex = filteredCountries.findIndex((c) => c.id === selectedCountry);
 
@@ -278,7 +292,7 @@ export default function Home() {
     const clientHeight = el.clientHeight;
     const scrollHeight = el.scrollHeight;
 
-    // Use a small threshold so mobile browsers don't miss the "near edge" state.
+    
     const thresholdPx = 24;
     const nearBottom = scrollTop + clientHeight >= scrollHeight - thresholdPx;
     const nearTop = scrollTop <= thresholdPx;
@@ -376,8 +390,10 @@ export default function Home() {
               {filteredCountries.map((country) => (
                 (() => {
                   const activePosition =
-                    isMobileViewport && country.mobilePosition
+                    isPhoneViewport && country.mobilePosition
                       ? country.mobilePosition
+                      : isTabletViewport && country.tabletPosition
+                        ? country.tabletPosition
                       : country.position;
 
                   return (
@@ -440,8 +456,8 @@ export default function Home() {
       </div>
 
       {/* Mobile country info modal */}
-      {isMobileInfoModalOpen && (
-        <div className="lg:hidden fixed inset-0 z-50">
+      {isPhoneViewport && isMobileInfoModalOpen && (
+        <div className="fixed inset-0 z-50">
           <button
             type="button"
             className="absolute inset-0 bg-black/50"
