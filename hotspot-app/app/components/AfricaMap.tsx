@@ -15,7 +15,20 @@ type Props = {
   countries: Country[];
   selectedCountryId: number;
   onSelectCountry: (id: number) => void;
+  /** Increment to fit the map back to the full Africa bounds (reset view). */
+  mapResetNonce?: number;
 };
+
+function FitAfricaOnReset({ mapResetNonce = 0 }: { mapResetNonce?: number }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (mapResetNonce === 0) return;
+    map.fitBounds(AFRICA_BOUNDS, { padding: [28, 28], maxZoom: 5, animate: true, duration: 0.55 });
+  }, [mapResetNonce, map]);
+
+  return null;
+}
 
 function RecenterOnSelected({ countries, selectedCountryId }: { countries: Country[]; selectedCountryId: number }) {
   const map = useMap();
@@ -29,7 +42,12 @@ function RecenterOnSelected({ countries, selectedCountryId }: { countries: Count
   return null;
 }
 
-export default function AfricaMap({ countries, selectedCountryId, onSelectCountry }: Props) {
+export default function AfricaMap({
+  countries,
+  selectedCountryId,
+  onSelectCountry,
+  mapResetNonce = 0,
+}: Props) {
   return (
     <MapContainer
       center={[-2, 20]}
@@ -69,6 +87,7 @@ export default function AfricaMap({ countries, selectedCountryId, onSelectCountr
       })}
 
       <RecenterOnSelected countries={countries} selectedCountryId={selectedCountryId} />
+      <FitAfricaOnReset mapResetNonce={mapResetNonce} />
     </MapContainer>
   );
 }

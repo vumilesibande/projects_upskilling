@@ -2,9 +2,20 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, type UIEventHandler } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type UIEventHandler,
+} from "react";
+import RegionCompare from "./components/RegionCompare";
 import { countries, defaultCountryId } from "./data/countries";
 import { getHighlightImageUrl } from "./data/highlightImages";
+import { trackEvent } from "./lib/analytics";
+import { buildDeepLinkHash, parseDeepLinkHash, type DeepLinkPatch } from "./lib/deepLink";
 
 const AfricaMap = dynamic(() => import("./components/AfricaMap"), { ssr: false });
 
@@ -50,15 +61,29 @@ export default function Home() {
   const [regionFilter, setRegionFilter] = useState("All");
   const [highlightFilter, setHighlightFilter] = useState("All");
   const [searchFilter, setSearchFilter] = useState("");
+  const [mapResetNonce, setMapResetNonce] = useState(0);
+  const [shareCopied, setShareCopied] = useState(false);
   const rightPanelRef = useRef<HTMLDivElement | null>(null);
   const advancedFromScrollRef = useRef<number | null>(null);
+  const appliedInitialHash = useRef(false);
 
   const handleHotspotClick = (countryId: number) => {
+    trackEvent("hotspot_click", { countryId });
     setSelectedCountry(countryId);
     if (isPhoneViewport) {
       setIsMobileInfoModalOpen(true);
     }
   };
+
+  const applyDeepLink = useCallback((parsed: DeepLinkPatch, source: "deep_link" | "hashchange") => {
+    if (parsed.regionFilter !== undefined) setRegionFilter(parsed.regionFilter);
+    if (parsed.highlightFilter !== undefined) setHighlightFilter(parsed.highlightFilter);
+    if (parsed.searchFilter !== undefined) setSearchFilter(parsed.searchFilter);
+    if (parsed.countryId !== undefined && countries.some((c) => c.id === parsed.countryId)) {
+      setSelectedCountry(parsed.countryId);
+    }
+    trackEvent("deep_link_applied", { source, ...parsed });
+  }, []);
 
   const regionOptions = useMemo(
     () => Array.from(new Set(countries.map((c) => c.region))).sort(),
@@ -68,6 +93,48 @@ export default function Home() {
     () => Array.from(new Set(countries.map((c) => c.highlight))).sort(),
     []
   );
+
+  useLayoutEffect(() => {
+    if (appliedInitialHash.current) return;
+    appliedInitialHash.current = true;
+    const parsed = parseDeepLinkHash(window.location.hash, regionOptions);
+    if (parsed) applyDeepLink(parsed, "deep_link");
+  }, [regionOptions, applyDeepLink]);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const parsed = parseDeepLinkHash(window.location.hash, regionOptions);
+      if (parsed) applyDeepLink(parsed, "hashchange");
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [regionOptions, applyDeepLink]);
+
+  useEffect(() => {
+    const next = buildDeepLinkHash(
+      {
+        regionFilter,
+        highlightFilter,
+        searchFilter,
+        selectedCountryId: selectedCountry,
+      },
+      regionOptions,
+      defaultCountryId
+    );
+    const current =
+      typeof window !== "undefined" && window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : typeof window !== "undefined"
+          ? window.location.hash
+          : "";
+    if (typeof window === "undefined" || next === current) return;
+    const base = `${window.location.pathname}${window.location.search}`;
+    if (next) {
+      window.history.replaceState(null, "", `${base}#${next}`);
+    } else {
+      window.history.replaceState(null, "", base);
+    }
+  }, [regionFilter, highlightFilter, searchFilter, selectedCountry, regionOptions]);
 
   const filteredCountries = useMemo(() => {
     const normalize = (value: string) =>
@@ -112,7 +179,7 @@ export default function Home() {
 
     introEl.scrollIntoView({ behavior: "smooth", block: "start" });
 
-    const heading = introEl.querySelector<HTMLElement>("h2");
+    const heading = introEl.querySelector<HTMLElement>("h1");
     heading?.focus?.();
   }, []);
 
@@ -158,7 +225,42 @@ export default function Home() {
     if (!nextId) return;
     if (nextId === selectedCountry) return;
     advancedFromScrollRef.current = nextId;
+    trackEvent("panel_scroll_select", { countryId: nextId });
     setSelectedCountry(nextId);
+  };
+
+  const handleResetView = () => {
+    trackEvent("reset_view", { source: "reset" });
+    setRegionFilter("All");
+    setHighlightFilter("All");
+    setSearchFilter("");
+    setSelectedCountry(defaultCountryId);
+    setMapResetNonce((n) => n + 1);
+    setIsMobileInfoModalOpen(false);
+    const base = `${window.location.pathname}${window.location.search}`;
+    window.history.replaceState(null, "", base);
+  };
+
+  const handleShareDeepLink = async () => {
+    const hash = buildDeepLinkHash(
+      {
+        regionFilter,
+        highlightFilter,
+        searchFilter,
+        selectedCountryId: selectedCountry,
+      },
+      regionOptions,
+      defaultCountryId
+    );
+    const url = `${window.location.origin}${window.location.pathname}${window.location.search}${hash ? `#${hash}` : ""}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      trackEvent("share_link_copy", { hasHash: Boolean(hash) });
+      window.setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      trackEvent("share_link_copy_failed", {});
+    }
   };
 
   const handleRightPanelScroll: UIEventHandler<HTMLDivElement> = (e) => {
@@ -200,7 +302,10 @@ export default function Home() {
             details appear on the right (or in a panel on small screens). Filter by region or
             highlight, or search by name. The map uses OpenStreetMap tiles with Leaflet; blue
             circles mark each hotspot. The large photo matches the country&apos;s highlight theme
-            and is fetched from Unsplash.
+            and is fetched from Unsplash. Use <strong>Compare regions</strong> for a side-by-side
+            table, <strong>Reset view</strong> to clear filters and refit the map, and{" "}
+            <strong>Copy share link</strong> for URLs like <code className="text-sm">#region-3</code>{" "}
+            (region index in the sorted list) plus optional filters.
           </p>
         </section>
 
@@ -217,7 +322,11 @@ export default function Home() {
               <input
                 type="text"
                 value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  trackEvent("filter_menu", { field: "search", value: v });
+                  setSearchFilter(v);
+                }}
                 placeholder="Search country..."
                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
               />
@@ -226,7 +335,11 @@ export default function Home() {
               <span className="text-sm text-gray-700">Region</span>
               <select
                 value={regionFilter}
-                onChange={(e) => setRegionFilter(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  trackEvent("filter_menu", { field: "region", value: v });
+                  setRegionFilter(v);
+                }}
                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
               >
                 <option value="All">All regions</option>
@@ -241,7 +354,11 @@ export default function Home() {
               <span className="text-sm text-gray-700">Highlight</span>
               <select
                 value={highlightFilter}
-                onChange={(e) => setHighlightFilter(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  trackEvent("filter_menu", { field: "highlight", value: v });
+                  setHighlightFilter(v);
+                }}
                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
               >
                 <option value="All">All highlights</option>
@@ -253,7 +370,34 @@ export default function Home() {
               </select>
             </label>
           </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-gray-200 pt-4">
+            <button
+              type="button"
+              onClick={handleResetView}
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
+            >
+              Reset view
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleShareDeepLink()}
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
+            >
+              {shareCopied ? "Link copied" : "Copy share link"}
+            </button>
+            <span className="text-xs text-gray-500">
+              Deep link uses sorted region index, e.g.{" "}
+              <code className="rounded bg-gray-100 px-1">#region-3</code>
+            </span>
+          </div>
         </section>
+
+        <RegionCompare
+          countries={countries}
+          regionOptions={regionOptions}
+          onPairChange={(a, b) => trackEvent("compare_regions", { regionA: a, regionB: b })}
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch lg:min-h-0">
           <div
             className={[
@@ -268,6 +412,7 @@ export default function Home() {
                 countries={filteredCountries}
                 selectedCountryId={selectedCountry}
                 onSelectCountry={handleHotspotClick}
+                mapResetNonce={mapResetNonce}
               />
             </div>
           </div>
