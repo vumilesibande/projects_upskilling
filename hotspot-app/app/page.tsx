@@ -1,179 +1,52 @@
 "use client";
 
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import "./globals.css";
+import { useEffect, useMemo, useRef, useState, type UIEventHandler } from "react";
+import { countries, defaultCountryId } from "./data/countries";
+import { getHighlightImageUrl } from "./data/highlightImages";
 
-interface Country {
-  id: number;
-  title: string;
-  copy: ReactNode;
-  position: { top: string; left: string };
-  mobilePosition?: { top: string; left: string };
-  tabletPosition?: { top: string; left: string };
-  flag: string;
-  region: string;
+const AfricaMap = dynamic(() => import("./components/AfricaMap"), { ssr: false });
+
+function HighlightIllustration({
+  highlight,
+  countryTitle,
+}: {
   highlight: string;
+  countryTitle: string;
+}) {
+  const src = getHighlightImageUrl(highlight);
+  return (
+    <figure className="space-y-2">
+      <Image
+        src={src}
+        alt={`${highlight} — thematic photograph`}
+        width={1200}
+        height={800}
+        className="aspect-[3/2] w-full max-w-xl rounded-md object-cover object-center mx-auto shadow-md"
+        sizes="(max-width: 1024px) 100vw, 42rem"
+      />
+      <figcaption className="text-center text-xs text-gray-500 leading-snug px-2">
+        Image for the <span className="font-medium text-gray-700">{highlight}</span> highlight,
+        loaded from the web (
+        <a
+          href="https://unsplash.com"
+          className="underline underline-offset-2"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Unsplash
+        </a>
+        ). Stock scene, not a photo of {countryTitle} specifically.
+      </figcaption>
+    </figure>
+  );
 }
 
-const countries: Country[] = [
-  {
-    id: 1,
-    title: "South Africa",
-    copy: (
-      <div className="space-y-4">
-        <p>
-          <span className="italic">South Africa</span> is a country located at
-          the southern tip of the African continent. It is situated entirely
-          within the Southern Hemisphere and is bordered to the north by{" "}
-          <span className="italic">Namibia</span>,{" "}
-          <span className="italic">Botswana</span>, and{" "}
-          <span className="italic">Zimbabwe</span>, to the northeast by{" "}
-          <span className="italic">Mozambique</span> and{" "}
-          <span className="italic">Eswatini</span>, and it surrounds the kingdom
-          of <span className="italic">Lesotho</span>. It is flanked by the
-          Atlantic Ocean to the southwest and the Indian Ocean to the southeast.
-        </p>
-        <p>The tourist attraction is Table Mountain.</p>
-        <Image
-          src="/table-mtn.jpg"
-          alt="table-mtn"
-          className="object-contain object-center mx-auto"
-          width={300}
-          height={300}
-        />
-      </div>
-    ),
-    position: { top: "89%", left: "64%" },
-    tabletPosition: { top: "90%", left: "63%" },
-    mobilePosition: { top: "77%", left: "67%" },
-    flag: "/flags/ZA.png",
-    region: "Southern Africa",
-    highlight: "Mountain",
-  },
-  {
-    id: 2,
-    title: "Angola",
-    copy: (
-      <div className="space-y-4">
-        <p>
-          Angola is a country located in the southwestern corner of Africa. Known
-          for its diverse landscapes - from the Namib Desert's otherworldly dunes
-          to the savannahs and the towering peaks of the Brandberg Mountains -
-          Angola is a destination that captivates the senses. Its vast, open
-          spaces, rich cultural heritage, and vibrant wildlife make it a truly
-          unforgettable experience.
-        </p>
-        <Image
-        src="/angola-falls.jpg"
-        alt="falls"
-        className="object-contain object-center mx-auto"
-        width={300}
-        height={300}
-        />
-      </div>
-  ),
-    position: { top: "67%", left: "57%" },
-    mobilePosition: { top: "62%", left: "58%" },
-    flag: "/flags/AO.png",
-    region: "Central Africa",
-    highlight: "Waterfall",
-  },
-  {
-    id: 3,
-    title: "Namibia",
-    copy: (
-      <div className="space-y-4">
-        <p>
-          Namibia, a land of stark beauty and untamed wilderness, is a country
-          located in the southwestern corner of Africa. Known for its diverse
-          landscapes - from the Namib Desert's otherworldly dunes to the savannahs
-          and the towering peaks of the Brandberg Mountains - Namibia is a
-          destination that captivates the senses. Its vast, open spaces, rich
-          cultural heritage, and vibrant wildlife make it a truly unforgettable
-          experience.
-        </p>
-        <Image
-          src="/namibia-desert-ocean.jpg"
-          alt="desert"
-          className="object-contain object-center mx-auto"
-          width={300}
-          height={300}
-        />
-      </div>
-        
-    ),
-    position: { top: "80%", left: "56%" },
-    mobilePosition: { top: "70%", left: "58%" },
-    flag: "/flags/NA.png",
-    region: "Southern Africa",
-    highlight: "Desert",
-  },
-  {
-    id: 4,
-    title: "Zimbabwe",
-    copy: (
-      <div className="space-y-4">
-        <p>
-        Zimbabwe, a land of breathtaking beauty and untamed wilderness, is a
-        country located in the southeastern corner of Africa. Known for its
-        diverse landscapes - from the majestic Victoria Falls to the rolling
-        hills of the Matobo National Park - Zimbabwe is a destination that
-        captivates the senses. Its rich cultural heritage, vibrant wildlife, and
-        unique wildlife make it a truly unforgettable experience.
-      </p>
-      <Image
-        src="/vic-falls.jpg"
-        alt="victoria-falls"
-        className="object-contain object-center mx-auto"
-        width={300}
-        height={300}
-      />
-      </div>
-    
-    ),
-    position: { top: "75%", left: "71%" },
-    mobilePosition: { top: "68%", left: "72%" },
-    flag: "/flags/ZW.png",
-    region: "Southern Africa",
-    highlight: "Waterfall",
-  },
-  {
-    id: 5,
-    title: "Botswana",
-    copy: (
-      <div className="space-y-4">
-        <p>
-        Botswana, a land of breathtaking beauty and untamed wilderness, is a
-        country located in the southeastern corner of Africa. Known for its
-        diverse landscapes - from the majestic Victoria Falls to the rolling
-        hills of the Matobo National Park - Botswana is a destination that
-        captivates the senses. Its rich cultural heritage, vibrant wildlife, and
-        unique wildlife make it a truly unforgettable experience.
-      </p>
-      <Image
-        src="/botswana-chobe-elephant.jpg"
-        alt="elephant"
-        className="object-contain object-center mx-auto"
-        width={300}
-        height={300}
-      />
-      </div>
-      
-    ),
-    position: { top: "78%", left: "64%" },
-    mobilePosition: { top: "70%", left: "66%" },
-    flag: "/flags/BW.png",
-    region: "Southern Africa",
-    highlight: "Wildlife",
-  },
-];
-
 export default function Home() {
-  const [selectedCountry, setSelectedCountry] = useState<number>(1);
+  const [selectedCountry, setSelectedCountry] = useState<number>(defaultCountryId);
   const [isMobileInfoModalOpen, setIsMobileInfoModalOpen] = useState(false);
   const [isPhoneViewport, setIsPhoneViewport] = useState(false);
-  const [isTabletViewport, setIsTabletViewport] = useState(false);
   const [regionFilter, setRegionFilter] = useState("All");
   const [highlightFilter, setHighlightFilter] = useState("All");
   const [searchFilter, setSearchFilter] = useState("");
@@ -186,6 +59,15 @@ export default function Home() {
       setIsMobileInfoModalOpen(true);
     }
   };
+
+  const regionOptions = useMemo(
+    () => Array.from(new Set(countries.map((c) => c.region))).sort(),
+    []
+  );
+  const highlightOptions = useMemo(
+    () => Array.from(new Set(countries.map((c) => c.highlight))).sort(),
+    []
+  );
 
   const filteredCountries = useMemo(() => {
     const normalize = (value: string) =>
@@ -224,14 +106,12 @@ export default function Home() {
     filteredCountries[0] ||
     countries[0];
 
-
   useEffect(() => {
     const introEl = document.getElementById("hotspot-introduction");
     if (!introEl) return;
 
     introEl.scrollIntoView({ behavior: "smooth", block: "start" });
 
-    
     const heading = introEl.querySelector<HTMLElement>("h2");
     heading?.focus?.();
   }, []);
@@ -242,17 +122,13 @@ export default function Home() {
 
   useEffect(() => {
     const phoneQuery = window.matchMedia("(max-width: 767px)");
-    const tabletQuery = window.matchMedia("(min-width: 768px) and (max-width: 1023px)");
     const syncViewport = () => {
       setIsPhoneViewport(phoneQuery.matches);
-      setIsTabletViewport(tabletQuery.matches);
     };
     syncViewport();
     phoneQuery.addEventListener("change", syncViewport);
-    tabletQuery.addEventListener("change", syncViewport);
     return () => {
       phoneQuery.removeEventListener("change", syncViewport);
-      tabletQuery.removeEventListener("change", syncViewport);
     };
   }, []);
 
@@ -262,7 +138,6 @@ export default function Home() {
     }
   }, [isPhoneViewport, isMobileInfoModalOpen]);
 
- 
   useEffect(() => {
     if (isPhoneViewport && isMobileInfoModalOpen) {
       const originalOverflow = document.body.style.overflow;
@@ -286,13 +161,12 @@ export default function Home() {
     setSelectedCountry(nextId);
   };
 
-  const handleRightPanelScroll: React.UIEventHandler<HTMLDivElement> = (e) => {
+  const handleRightPanelScroll: UIEventHandler<HTMLDivElement> = (e) => {
     const el = e.currentTarget;
     const scrollTop = el.scrollTop;
     const clientHeight = el.clientHeight;
     const scrollHeight = el.scrollHeight;
 
-    
     const thresholdPx = 24;
     const nearBottom = scrollTop + clientHeight >= scrollHeight - thresholdPx;
     const nearTop = scrollTop <= thresholdPx;
@@ -319,11 +193,14 @@ export default function Home() {
           className="mb-8 rounded-lg bg-white p-6 shadow-sm border border-gray-200"
         >
           <h2 tabIndex={-1} className="text-xl text-center font-bold text-gray-900 mb-2">
-            Interactive page to explore some of Africa's countries
+            Interactive page to explore some of Africa&apos;s countries
           </h2>
           <p className="text-gray-700 text-center leading-relaxed">
-            Click on the flag hotspots on the map to select a country. The country
-            name and information will appear on the right. The map is a static image and the flags are interactive. You can also filter the countries by region and highlight. When filter by region or highlight, the countries will be filtered accordingly. When it shows more than one country flag on the map, you can click on the flag to select a country.
+            Click a marker on the map to select a country (all 54 African UN member states). Country
+            details appear on the right (or in a panel on small screens). Filter by region or
+            highlight, or search by name. The map uses OpenStreetMap tiles with Leaflet; blue
+            circles mark each hotspot. The large photo matches the country&apos;s highlight theme
+            and is fetched from Unsplash.
           </p>
         </section>
 
@@ -353,8 +230,11 @@ export default function Home() {
                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
               >
                 <option value="All">All regions</option>
-                <option value="Southern Africa">Southern Africa</option>
-                <option value="Central Africa">Central Africa</option>
+                {regionOptions.map((region) => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="flex flex-col gap-1">
@@ -365,68 +245,26 @@ export default function Home() {
                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
               >
                 <option value="All">All highlights</option>
-                <option value="Mountain">Mountain</option>
-                <option value="Desert">Desert</option>
-                <option value="Waterfall">Waterfall</option>
-                <option value="Wildlife">Wildlife</option>
+                {highlightOptions.map((highlight) => (
+                  <option key={highlight} value={highlight}>
+                    {highlight}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
         </section>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          {/* first column: Map with Hotspots using country flags */}
           <div className="relative bg-white rounded-lg shadow-lg overflow-hidden lg:h-[80vh]">
             <div className="relative w-full h-[55vh] min-h-[320px] max-h-[700px] lg:h-full">
-              {/* image of map */}
-              <Image
-                src="/map.jpg"
-                alt="Map"
-                fill
-                className="map-image object-center"
-                priority
+              <AfricaMap
+                countries={filteredCountries}
+                selectedCountryId={selectedCountry}
+                onSelectCountry={handleHotspotClick}
               />
-
-              {/* Flag Icons */}
-              {filteredCountries.map((country) => (
-                (() => {
-                  const activePosition =
-                    isPhoneViewport && country.mobilePosition
-                      ? country.mobilePosition
-                      : isTabletViewport && country.tabletPosition
-                        ? country.tabletPosition
-                      : country.position;
-
-                  return (
-                <button
-                  key={country.id}
-                  onClick={() => handleHotspotClick(country.id)}
-                  className="flag-icon"
-                  style={{
-                    top: activePosition.top,
-                    left: activePosition.left,
-                  }}
-                  aria-label={`Select ${country.title}`}
-                >
-                  <div
-                    className={`relative w-12 h-8 rounded transition-all duration-300 ${
-                      selectedCountry === country.id ? "scale-125" : ""
-                    }`}
-                  >
-                    <Image
-                      src={country.flag}
-                      alt={`${country.title} flag`}
-                      fill
-                      className="flag-icon-item"
-                    />
-                  </div>
-                </button>
-                  );
-                })()
-              ))}
             </div>
           </div>
 
-          {/* Column 2: Country Information (desktop only) */}
           <div
             ref={rightPanelRef}
             onScroll={handleRightPanelScroll}
@@ -441,8 +279,12 @@ export default function Home() {
                   <div className="mb-3 text-sm text-gray-500">
                     {selectedCountryData.region} • {selectedCountryData.highlight}
                   </div>
-                  <div className="text-gray-600 leading-relaxed">
-                    {selectedCountryData.copy}
+                  <div className="text-gray-600 leading-relaxed space-y-4">
+                    <p>{selectedCountryData.description}</p>
+                    <HighlightIllustration
+                      highlight={selectedCountryData.highlight}
+                      countryTitle={selectedCountryData.title}
+                    />
                   </div>
                 </div>
               </div>
@@ -455,7 +297,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Mobile country info modal */}
       {isPhoneViewport && isMobileInfoModalOpen && (
         <div className="fixed inset-0 z-50">
           <button
@@ -487,8 +328,12 @@ export default function Home() {
                 <div className="mb-3 text-sm text-gray-500">
                   {selectedCountryData.region} • {selectedCountryData.highlight}
                 </div>
-                <div className="text-gray-600 leading-relaxed">
-                  {selectedCountryData.copy}
+                <div className="text-gray-600 leading-relaxed space-y-4">
+                  <p>{selectedCountryData.description}</p>
+                  <HighlightIllustration
+                    highlight={selectedCountryData.highlight}
+                    countryTitle={selectedCountryData.title}
+                  />
                 </div>
               </>
             ) : (
