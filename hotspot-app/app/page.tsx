@@ -254,9 +254,16 @@ export default function Home() {
             </label>
           </div>
         </section>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          <div className="relative bg-white rounded-lg shadow-lg overflow-hidden lg:h-[80vh]">
-            <div className="relative w-full h-[55vh] min-h-[320px] max-h-[700px] lg:h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch lg:min-h-0">
+          <div
+            className={[
+              "relative z-0 min-w-0 bg-white rounded-lg shadow-lg overflow-hidden lg:h-[80vh]",
+              isPhoneViewport && isMobileInfoModalOpen ? "max-lg:hidden" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <div className="relative isolate z-0 h-[55vh] min-h-[320px] max-h-[700px] w-full min-w-0 overflow-hidden lg:h-full lg:max-h-none">
               <AfricaMap
                 countries={filteredCountries}
                 selectedCountryId={selectedCountry}
@@ -268,7 +275,7 @@ export default function Home() {
           <div
             ref={rightPanelRef}
             onScroll={handleRightPanelScroll}
-            className="hidden lg:block bg-white rounded-lg shadow-lg p-8 overflow-y-auto lg:h-[80vh]"
+            className="relative z-10 hidden min-w-0 bg-white rounded-lg shadow-lg p-8 overflow-y-auto overflow-x-hidden lg:block lg:h-[80vh]"
           >
             {filteredCountries.length > 0 ? (
               <div className="space-y-6">
@@ -298,10 +305,13 @@ export default function Home() {
       </div>
 
       {isPhoneViewport && isMobileInfoModalOpen && (
-        <div className="fixed inset-0 z-50">
+        <div
+          className="fixed inset-0 z-[10000] flex flex-col justify-end"
+          role="presentation"
+        >
           <button
             type="button"
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 z-0 bg-black/50"
             aria-label="Close country information"
             onClick={() => setIsMobileInfoModalOpen(false)}
           />
@@ -309,7 +319,7 @@ export default function Home() {
             role="dialog"
             aria-modal="true"
             aria-label={`${selectedCountryData.title} information`}
-            className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl"
+            className="relative z-10 max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-t-2xl bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl"
           >
             {filteredCountries.length > 0 ? (
               <>

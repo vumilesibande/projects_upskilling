@@ -42,3 +42,8 @@ body {
 .page-heading {
   @apply text-3xl font-bold text-gray-900 mb-8 text-center;
 }
+
+/* Keep Leaflet inside its grid cell (avoid overlap / horizontal bleed). */
+.leaflet-container {
+  max-width: 100%;
+}
