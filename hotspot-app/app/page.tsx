@@ -192,9 +192,9 @@ export default function Home() {
           aria-label="How to interact"
           className="mb-8 rounded-lg bg-white p-6 shadow-sm border border-gray-200"
         >
-          <h2 tabIndex={-1} className="text-xl text-center font-bold text-gray-900 mb-2">
+          <h1 tabIndex={-1} className="text-xl text-center font-bold text-gray-900 mb-2">
             Interactive page to explore some of Africa&apos;s countries
-          </h2>
+          </h1>
           <p className="text-gray-700 text-center leading-relaxed">
             Click a marker on the map to select a country (all 54 African UN member states). Country
             details appear on the right (or in a panel on small screens). Filter by region or
