@@ -1,0 +1,111 @@
+@use 'mixins' as *;
+@use 'variables' as *;
+
+.section {
+  padding: var(--space-xl) var(--space-md);
+
+  &--alt {
+    background: var(--color-bg-alt);
+  }
+
+  &--contact {
+    background: var(--color-accent);
+    color: var(--color-surface);
+
+    a {
+      color: var(--color-surface);
+    }
+
+    .btn--primary {
+      color: var(--color-accent);
+      background: var(--color-surface);
+
+      &:hover {
+        background: var(--color-accent-soft);
+        color: var(--color-accent-hover);
+      }
+    }
+
+    .btn--ghost {
+      color: var(--color-surface);
+      border-color: rgba(255, 253, 249, 0.6);
+
+      &:hover {
+        background: rgba(255, 253, 249, 0.12);
+      }
+    }
+  }
+
+  &__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  h2 {
+    margin: 0 0 var(--space-lg);
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 600;
+  }
+}
+
+.subsection-title {
+  margin: var(--space-lg) 0 var(--space-md);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.section-intro {
+  margin: -1rem 0 var(--space-lg);
+  max-width: 40rem;
+  color: var(--color-ink-muted);
+}
+
+.prose p {
+  margin: 0 0 var(--space-md);
+  max-width: 42rem;
+}
+
+.skill-grid {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  list-style: none;
+
+  @include from($bp-grid-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  li {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+}
+
+.tech-list {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+
+  @include from($bp-grid-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  dt {
+    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+}

@@ -1,0 +1,28 @@
+:root {
+  --color-bg: #f4f1eb;
+  --color-bg-alt: #ebe6dc;
+  --color-surface: #fffdf9;
+  --color-ink: #1a2421;
+  --color-ink-muted: #4a5c56;
+  --color-accent: #0d5c4b;
+  --color-accent-soft: #d4ebe4;
+  --color-accent-hover: #094a3d;
+  --color-border: rgba(26, 36, 33, 0.12);
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --radius: 12px;
+  --shadow: 0 12px 40px rgba(26, 36, 33, 0.08);
+  --max-width: 72rem;
+  --header-height: 4.5rem;
+}
+
+$bp-metrics: 500px;
+$bp-grid-sm: 640px;
+$bp-projects: 700px;
+$bp-nav: 720px;
+$bp-hero: 900px;

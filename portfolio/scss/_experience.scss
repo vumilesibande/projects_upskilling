@@ -1,0 +1,108 @@
+@use 'mixins' as *;
+@use 'variables' as *;
+
+.timeline-item {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  h3 {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+  }
+
+  &__meta {
+    margin: 0 0 var(--space-md);
+    font-size: 0.9375rem;
+    color: var(--color-ink-muted);
+
+    span:first-child {
+      font-weight: 600;
+      color: var(--color-ink);
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--color-ink-muted);
+  }
+
+  li + li {
+    margin-top: 0.5rem;
+  }
+}
+
+.platforms {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+
+  &__title {
+    margin: 0 0 var(--space-sm);
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-ink);
+  }
+
+  &__lead {
+    margin: 0 0 var(--space-lg);
+    max-width: 42rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+  }
+}
+
+.platform-links {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from($bp-grid-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-md);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      color: var(--color-accent-hover);
+      background: var(--color-surface);
+      border-color: var(--color-accent);
+    }
+
+    &::after {
+      flex-shrink: 0;
+      font-size: 1.125rem;
+      line-height: 1;
+      opacity: 0.75;
+      content: "→";
+    }
+  }
+}

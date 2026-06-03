@@ -1,0 +1,32 @@
+.contact-lead {
+  margin: 0 0 var(--space-lg);
+  max-width: 32rem;
+  font-size: 1.125rem;
+  opacity: 0.95;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.site-footer {
+  padding: var(--space-lg) var(--space-md);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  border-top: 1px solid var(--color-border);
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  &__sep {
+    margin: 0 0.5rem;
+  }
+}
