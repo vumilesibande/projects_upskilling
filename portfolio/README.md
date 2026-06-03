@@ -67,6 +67,18 @@ Profile link on the site: [github.com/vumilesibande](https://github.com/vumilesi
 
 For a root URL like `https://vumilesibande.github.io`, use a separate repo named `vumilesibande.github.io` with these files at the repository root.
 
+## Deploy on Vercel
+
+This site is static HTML (not Next.js). Vercel must serve the `portfolio` folder, not a `public` directory.
+
+**Option A — recommended:** In Vercel → Project → Settings → General → **Root Directory**, set `portfolio`.  
+`portfolio/vercel.json` sets `outputDirectory` to `.` and runs `npm run build:css` (compiles `dist/styles.css`).
+
+**Option B — repo root:** If Root Directory is empty, the repo root `vercel.json` builds `portfolio/` and uses it as the output.
+
+Framework Preset should be **Other** (or overridden by `framework: null` in `vercel.json`).  
+Do not use the Next.js preset for this project.
+
 ## Other hosts
 
 Upload the `portfolio` folder to Netlify, S3, or any static host.
