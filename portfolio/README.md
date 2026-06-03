@@ -69,15 +69,14 @@ For a root URL like `https://vumilesibande.github.io`, use a separate repo named
 
 ## Deploy on Vercel
 
-This site is static HTML (not Next.js). Vercel must serve the `portfolio` folder, not a `public` directory.
+**Root Directory:** `portfolio` (recommended).
 
-**Option A — recommended:** In Vercel → Project → Settings → General → **Root Directory**, set `portfolio`.  
-`portfolio/vercel.json` sets `outputDirectory` to `.` and runs `npm run build:css` (compiles `dist/styles.css`).
+`npm run build` copies static files into `public/` and compiles CSS to `public/dist/styles.css`.  
+`vercel.json` sets `outputDirectory` to `public`.
 
-**Option B — repo root:** If Root Directory is empty, the repo root `vercel.json` builds `portfolio/` and uses it as the output.
+Framework Preset: **Other** (not Next.js). Build command: `npm run build`.
 
-Framework Preset should be **Other** (or overridden by `framework: null` in `vercel.json`).  
-Do not use the Next.js preset for this project.
+Local preview still uses `npm run build:css` → `dist/styles.css` at the project root.
 
 ## Other hosts
 

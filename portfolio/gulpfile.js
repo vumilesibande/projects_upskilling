@@ -4,7 +4,7 @@ const sassCompiler = require('gulp-sass')(require('sass'));
 
 const scssEntry = 'scss/main.scss';
 const scssWatch = 'scss/**/*.scss';
-const cssOutputDir = 'dist';
+const staticAssets = ['index.html', 'script.js', '.nojekyll'];
 
 function styles() {
   return src(scssEntry)
@@ -12,7 +12,20 @@ function styles() {
       sassCompiler({ style: 'expanded' }).on('error', sassCompiler.logError),
     )
     .pipe(rename('styles.css'))
-    .pipe(dest(cssOutputDir));
+    .pipe(dest('dist'));
+}
+
+function stylesPublic() {
+  return src(scssEntry)
+    .pipe(
+      sassCompiler({ style: 'expanded' }).on('error', sassCompiler.logError),
+    )
+    .pipe(rename('styles.css'))
+    .pipe(dest('public/dist'));
+}
+
+function copyToPublic() {
+  return src(staticAssets, { allowEmpty: true }).pipe(dest('public'));
 }
 
 function watchStyles() {
@@ -20,6 +33,7 @@ function watchStyles() {
 }
 
 exports.styles = styles;
-exports.build = styles;
+exports['build:public'] = series(copyToPublic, stylesPublic);
+exports.build = series(copyToPublic, stylesPublic);
 exports.watch = series(styles, watchStyles);
 exports.default = styles;

@@ -2,8 +2,8 @@
   "name": "vumile-sibande-portfolio",
   "private": true,
   "scripts": {
-    "build": "npm run build:css",
-    "vercel-build": "npm run build:css",
+    "build": "gulp build",
+    "vercel-build": "gulp build",
     "build:css": "gulp styles",
     "watch": "gulp watch",
     "watch:css": "gulp watch"
