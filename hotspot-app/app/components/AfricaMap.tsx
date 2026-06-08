@@ -1,21 +1,36 @@
 "use client";
 
-import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from "react-leaflet";
+import L from "leaflet";
+import { MapContainer, TileLayer, CircleMarker, Marker, Tooltip, useMap } from "react-leaflet";
 import type { LatLngBoundsExpression } from "leaflet";
 import { Country } from "../data/countries";
-import { useEffect } from "react";
+import { getCountryFlagUrl } from "../data/countryFlags";
+import { useEffect, useMemo } from "react";
 
-/** Rough bounds covering Africa + Madagascar + Atlantic/Cape Verde and Indian Ocean islands (e.g. Mauritius). */
 const AFRICA_BOUNDS: LatLngBoundsExpression = [
   [-38, -26],
   [39, 60],
 ];
 
+const FLAG_WIDTH_SELECTED = 40;
+
+function createSelectedFlagIcon(country: Country): L.Icon {
+  const width = FLAG_WIDTH_SELECTED;
+  const height = Math.round(width * 0.67);
+
+  return L.icon({
+    iconUrl: getCountryFlagUrl(country.id, width),
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height / 2],
+    tooltipAnchor: [0, -Math.ceil(height / 2) - 4],
+    className: "country-flag-leaflet-icon country-flag-leaflet-icon--selected",
+  });
+}
+
 type Props = {
   countries: Country[];
   selectedCountryId: number;
   onSelectCountry: (id: number) => void;
-  /** Increment to fit the map back to the full Africa bounds (reset view). */
   mapResetNonce?: number;
 };
 
@@ -48,6 +63,16 @@ export default function AfricaMap({
   onSelectCountry,
   mapResetNonce = 0,
 }: Props) {
+  const selectedFlagIcons = useMemo(() => {
+    const icons = new Map<number, L.Icon>();
+    for (const country of countries) {
+      if (country.id === selectedCountryId) {
+        icons.set(country.id, createSelectedFlagIcon(country));
+      }
+    }
+    return icons;
+  }, [countries, selectedCountryId]);
+
   return (
     <MapContainer
       center={[-2, 20]}
@@ -66,16 +91,35 @@ export default function AfricaMap({
 
       {countries.map((country) => {
         const selected = country.id === selectedCountryId;
+        const position: [number, number] = [country.lat, country.lng];
+
+        if (selected) {
+          const icon = selectedFlagIcons.get(country.id)!;
+          return (
+            <Marker
+              key={country.id}
+              position={position}
+              icon={icon}
+              zIndexOffset={1000}
+              eventHandlers={{ click: () => onSelectCountry(country.id) }}
+            >
+              <Tooltip direction="top" offset={[0, -18]}>
+                {country.title}
+              </Tooltip>
+            </Marker>
+          );
+        }
+
         return (
           <CircleMarker
             key={country.id}
-            center={[country.lat, country.lng]}
-            radius={selected ? 11 : 8}
+            center={position}
+            radius={8}
             pathOptions={{
-              color: selected ? "#1d4ed8" : "#ffffff",
-              weight: selected ? 3 : 2,
-              fillColor: selected ? "#3b82f6" : "#60a5fa",
-              fillOpacity: selected ? 0.95 : 0.75,
+              color: "#ffffff",
+              weight: 2,
+              fillColor: "#60a5fa",
+              fillOpacity: 0.85,
             }}
             eventHandlers={{ click: () => onSelectCountry(country.id) }}
           >

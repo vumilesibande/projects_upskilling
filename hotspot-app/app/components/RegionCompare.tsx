@@ -47,21 +47,21 @@ export default function RegionCompare({ countries, regionOptions, onPairChange }
     <section
       id="region-compare"
       aria-labelledby="region-compare-heading"
-      className="mb-8 rounded-lg bg-white p-6 shadow-sm border border-gray-200"
+      className="hotspot-card mb-8"
     >
-      <h2 id="region-compare-heading" className="text-xl font-bold text-gray-900 mb-2">
+      <h2 id="region-compare-heading" className="hotspot-section-title mb-2">
         Compare regions
       </h2>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="mb-4 text-sm text-stone-600">
         Side-by-side snapshot of two UN-style subregions (country counts and highlight mix).
       </p>
       <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-gray-700">Region A</span>
+          <span className="text-sm font-medium text-emerald-900">Region A</span>
           <select
             value={a}
             onChange={(e) => setA(e.target.value)}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="hotspot-field"
           >
             {regionOptions.map((r) => (
               <option key={r} value={r}>
@@ -71,11 +71,11 @@ export default function RegionCompare({ countries, regionOptions, onPairChange }
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-gray-700">Region B</span>
+          <span className="text-sm font-medium text-amber-900">Region B</span>
           <select
             value={b}
             onChange={(e) => setB(e.target.value)}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="hotspot-field"
           >
             {regionOptions.map((r) => (
               <option key={r} value={r}>
@@ -85,24 +85,24 @@ export default function RegionCompare({ countries, regionOptions, onPairChange }
           </select>
         </label>
       </div>
-      <div className="overflow-x-auto rounded-md border border-gray-200">
+      <div className="overflow-x-auto rounded-md border border-orange-200">
         <table className="w-full min-w-[320px] text-sm text-left">
-          <thead className="bg-gray-100 text-gray-800">
+          <thead className="bg-gradient-to-r from-emerald-100 to-amber-100 text-emerald-950">
             <tr>
               <th className="px-3 py-2 font-semibold w-1/3">Metric</th>
               <th className="px-3 py-2 font-semibold">{a}</th>
               <th className="px-3 py-2 font-semibold">{b}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-orange-100 bg-white/80">
             <tr>
-              <td className="px-3 py-2 text-gray-600">Countries</td>
-              <td className="px-3 py-2 font-medium text-gray-900">{statsA.count}</td>
-              <td className="px-3 py-2 font-medium text-gray-900">{statsB.count}</td>
+              <td className="px-3 py-2 text-stone-600">Countries</td>
+              <td className="px-3 py-2 font-semibold text-emerald-900">{statsA.count}</td>
+              <td className="px-3 py-2 font-semibold text-amber-900">{statsB.count}</td>
             </tr>
             <tr>
-              <td className="px-3 py-2 align-top text-gray-600">By highlight</td>
-              <td className="px-3 py-2 align-top text-gray-800">
+              <td className="px-3 py-2 align-top text-stone-600">By highlight</td>
+              <td className="px-3 py-2 align-top text-stone-800">
                 <ul className="list-disc list-inside space-y-0.5">
                   {statsA.highlightsSorted.map(([h, n]) => (
                     <li key={h}>
@@ -111,7 +111,7 @@ export default function RegionCompare({ countries, regionOptions, onPairChange }
                   ))}
                 </ul>
               </td>
-              <td className="px-3 py-2 align-top text-gray-800">
+              <td className="px-3 py-2 align-top text-stone-800">
                 <ul className="list-disc list-inside space-y-0.5">
                   {statsB.highlightsSorted.map(([h, n]) => (
                     <li key={h}>
@@ -122,11 +122,11 @@ export default function RegionCompare({ countries, regionOptions, onPairChange }
               </td>
             </tr>
             <tr>
-              <td className="px-3 py-2 align-top text-gray-600">Countries (A–Z)</td>
-              <td className="px-3 py-2 align-top text-xs text-gray-700 max-h-40 overflow-y-auto">
+              <td className="px-3 py-2 align-top text-stone-600">Countries (A–Z)</td>
+              <td className="px-3 py-2 align-top max-h-40 overflow-y-auto text-xs text-stone-700">
                 {statsA.names.join(", ")}
               </td>
-              <td className="px-3 py-2 align-top text-xs text-gray-700 max-h-40 overflow-y-auto">
+              <td className="px-3 py-2 align-top max-h-40 overflow-y-auto text-xs text-stone-700">
                 {statsB.names.join(", ")}
               </td>
             </tr>
