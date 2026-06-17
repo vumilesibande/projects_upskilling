@@ -38,6 +38,10 @@
   }
 }
 
+.platforms + .platforms {
+  margin-top: var(--space-lg);
+}
+
 .platforms {
   margin-top: var(--space-xl);
   padding: var(--space-lg);

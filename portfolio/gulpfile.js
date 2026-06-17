@@ -5,6 +5,7 @@ const sassCompiler = require('gulp-sass')(require('sass'));
 const scssEntry = 'scss/main.scss';
 const scssWatch = 'scss/**/*.scss';
 const staticAssets = ['index.html', 'script.js', '.nojekyll'];
+const staticDirs = ['assets/**/*'];
 
 function styles() {
   return src(scssEntry)
@@ -25,7 +26,9 @@ function stylesPublic() {
 }
 
 function copyToPublic() {
-  return src(staticAssets, { allowEmpty: true }).pipe(dest('public'));
+  return src([...staticAssets, ...staticDirs], { base: '.', allowEmpty: true }).pipe(
+    dest('public'),
+  );
 }
 
 function watchStyles() {

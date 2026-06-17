@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="KitKat global platform preview placeholder">
+  <rect width="800" height="500" fill="#1a2421"/>
+  <rect x="40" y="60" width="720" height="380" rx="12" fill="#2d3d38"/>
+  <text x="400" y="240" text-anchor="middle" fill="#d4ebe4" font-family="system-ui,sans-serif" font-size="22" font-weight="600">KitKat Global</text>
+  <text x="400" y="280" text-anchor="middle" fill="#8aa89f" font-family="system-ui,sans-serif" font-size="15">Replace with assets/images/featured-kitkat.jpg</text>
+</svg>

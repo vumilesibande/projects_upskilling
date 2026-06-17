@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Hotspot application preview placeholder">
+  <rect width="800" height="500" fill="#0d5c4b"/>
+  <circle cx="280" cy="220" r="24" fill="#d4ebe4" opacity="0.9"/>
+  <circle cx="420" cy="180" r="18" fill="#d4ebe4" opacity="0.7"/>
+  <circle cx="520" cy="300" r="20" fill="#d4ebe4" opacity="0.8"/>
+  <text x="400" y="400" text-anchor="middle" fill="#fffdf9" font-family="system-ui,sans-serif" font-size="22" font-weight="600">Interactive Hotspot App</text>
+  <text x="400" y="435" text-anchor="middle" fill="#d4ebe4" font-family="system-ui,sans-serif" font-size="14">Replace with screenshot or GIF</text>
+</svg>

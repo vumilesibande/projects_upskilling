@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="React component library preview placeholder">
+  <rect width="800" height="500" fill="#f4f1eb"/>
+  <rect x="48" y="48" width="704" height="404" rx="16" fill="#fffdf9" stroke="#0d5c4b" stroke-width="2"/>
+  <rect x="80" y="100" width="200" height="120" rx="8" fill="#d4ebe4"/>
+  <rect x="300" y="100" width="420" height="48" rx="8" fill="#ebe6dc"/>
+  <rect x="300" y="170" width="360" height="48" rx="8" fill="#ebe6dc"/>
+  <text x="400" y="380" text-anchor="middle" fill="#1a2421" font-family="system-ui,sans-serif" font-size="22" font-weight="600">React UI Library</text>
+  <text x="400" y="415" text-anchor="middle" fill="#4a5c56" font-family="system-ui,sans-serif" font-size="14">Replace with assets/images/featured-react.jpg</text>
+</svg>

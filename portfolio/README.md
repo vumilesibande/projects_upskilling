@@ -1,6 +1,6 @@
 # Vumile Sibande — Portfolio
 
-Single-page portfolio aligned with `Vumile Sibande CV-gis.docx` in the repo root.
+Single-page portfolio aligned with `Vumile Sibande-cv.pdf` in the repo root.
 
 ## View locally
 
@@ -26,9 +26,9 @@ Or open `index.html` directly in a browser.
 ## Contents
 
 - Hero, about, skills, experience (from CV)
-- Upskilling projects: `hotspot-app`, `react-ui-library` (per CV)
-- GIS-oriented frontend focus
-- Enterprise highlights (African Parks, KitKat)
+- Upskilling projects: `react-ui-library`, `hotspot-app` (live on Vercel)
+- Enterprise platforms: KitKat, Purina, Viceroy, and more
+- Positioned for hire across Drupal, React, Next.js, and general frontend
 - Education and certifications
 - Contact links
 

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="320" viewBox="0 0 400 320" role="img" aria-label="Lighthouse performance after optimization placeholder">
+  <rect width="400" height="320" rx="12" fill="#fffdf9"/>
+  <text x="200" y="48" text-anchor="middle" fill="#1a2421" font-family="system-ui,sans-serif" font-size="16" font-weight="600">Performance (after)</text>
+  <circle cx="200" cy="160" r="72" fill="none" stroke="#0d5c4b" stroke-width="14"/>
+  <text x="200" y="172" text-anchor="middle" fill="#0d5c4b" font-family="system-ui,sans-serif" font-size="42" font-weight="700">92</text>
+  <text x="200" y="280" text-anchor="middle" fill="#4a5c56" font-family="system-ui,sans-serif" font-size="13">Add real Lighthouse screenshot</text>
+</svg>
