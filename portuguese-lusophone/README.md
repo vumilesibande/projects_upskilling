@@ -25,7 +25,7 @@ Practical Portuguese for **people who have moved to Mozambique**. Next.js 16, Ty
 If you use [nvm](https://github.com/nvm-sh/nvm), the project includes `.nvmrc`:
 
 ```bash
-cd portuguese-lusophone-app
+cd portuguese-lusophone
 nvm use          # switches to Node 20
 node -v          # should show v20.x
 npm install

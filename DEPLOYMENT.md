@@ -1,64 +1,31 @@
 # Vercel deployment
 
-This repo has several apps. **Portfolio is not inside the language app** — they are separate folders at the repo root.
+This repo has several **separate apps** in their own folders. Portfolio is **not** inside the language app.
 
-| App | Root Directory | Build |
+| App | Root Directory | Notes |
 |-----|----------------|-------|
-| Portuguese Next.js app (recommended) | `portuguese-lusophone-app` | `npm install` + `npm run build` |
-| Portuguese static PWA | `portuguese-lusophone` | No npm — static files only |
-| Portfolio | `portfolio` | `npm install` + `gulp build` |
-| Hotspot app | `hotspot-app` | Next.js |
+| **Portuguese language app** | `portuguese-lusophone` | Next.js — Translate, practice, etc. |
+| **Portfolio** | `portfolio` | Static CV site (Gulp) |
+| **Hotspot app** | `hotspot-app` | Next.js |
 
-## Fix: `portfolio/package.json` ENOENT
+## Language app on Vercel
 
-That error means Vercel is running a **portfolio** install command while your root directory is the **language app**.
+1. **Settings → General → Root Directory:** `portuguese-lusophone`
+2. **Settings → Build & Deployment:**
+   - Install Command: **Override off** (or `npm install`)
+   - Build Command: **Override off** (or `npm run build`)
+   - Do **not** use `npm install --prefix portfolio`
+3. Framework: **Next.js** (auto-detected)
+4. Redeploy
 
-```
-npm install --prefix portfolio
-→ looks for portuguese-lusophone/portfolio/package.json  ❌
-```
+## Portfolio on Vercel (separate project)
 
-### Step 1 — Vercel dashboard (required)
+1. Root Directory: `portfolio`
+2. Uses `portfolio/vercel.json` → output `public/`
 
-1. Open your project on [vercel.com](https://vercel.com)
-2. **Settings → General → Root Directory**
-   - For the Next.js language app: `portuguese-lusophone-app`
-   - For the static PWA: `portuguese-lusophone`
-3. **Settings → Build & Deployment**
-   - **Install Command** → toggle **Override** off, or clear the field  
-     (remove `npm install --prefix portfolio` if it is there)
-   - **Build Command** → toggle **Override** off, or clear the field
-   - **Output Directory** → leave default for Next.js, or `.` for static PWA
-4. **Redeploy** (Deployments → … → Redeploy)
+## Why separate folders?
 
-### Step 2 — Repo change
+- **Portfolio** = your CV / work showcase (different site, different deploy)
+- **portuguese-lusophone** = language learning app (Next.js)
 
-The repo root `vercel.json` that pointed at portfolio was removed so it no longer conflicts with the language app. Each app uses its own `vercel.json` inside its folder.
-
-## Portuguese Next.js app (translate + speak)
-
-```
-Root Directory: portuguese-lusophone-app
-Framework: Next.js (auto-detected)
-```
-
-Uses `portuguese-lusophone-app/vercel.json`.
-
-## Portuguese static PWA
-
-```
-Root Directory: portuguese-lusophone
-Install Command: (empty)
-Build Command: (empty)
-Output Directory: .
-```
-
-Uses `portuguese-lusophone/vercel.json`.
-
-## Portfolio (separate Vercel project)
-
-```
-Root Directory: portfolio
-```
-
-Uses `portfolio/vercel.json` → output `public/`.
+One Vercel project = one root folder. Use two Vercel projects from the same GitHub repo if you want both live.
