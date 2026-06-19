@@ -128,6 +128,43 @@ export function lookupEnglish(input: string): LookupMatch[] {
     .slice(0, 8);
 }
 
+function normalizePortuguese(text: string): string {
+  return normalize(text.replace(/\*.*$/g, '').split('/')[0] ?? text);
+}
+
+export function lookupPortuguese(pt: string): Pronunciation | undefined {
+  const query = normalizePortuguese(pt);
+  if (!query) {
+    return undefined;
+  }
+
+  let best: { pron?: Pronunciation; score: number } | undefined;
+
+  for (const entry of PHRASE_INDEX) {
+    if (!entry.pron?.simple) {
+      continue;
+    }
+
+    const target = normalizePortuguese(entry.pt);
+    if (!target) {
+      continue;
+    }
+
+    if (query === target) {
+      return entry.pron;
+    }
+
+    if (query.includes(target) || target.includes(query)) {
+      const score = overlapScore(query, target);
+      if (!best || score > best.score) {
+        best = { pron: entry.pron, score };
+      }
+    }
+  }
+
+  return best?.pron;
+}
+
 export function splitSentences(text: string): string[] {
   return text
     .split(/\n+/)

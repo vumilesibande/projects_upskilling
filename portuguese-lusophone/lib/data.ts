@@ -52,6 +52,10 @@ This app uses European Portuguese (pt-PT) for audio — the same tradition taugh
     title: 'Neighbours, shops & politeness',
     phrases: [
       { pt: 'Bom dia', en: 'Good morning', pron: { simple: 'bohng JEE-ah', ipa: '/bõ ˈdi.ɐ/' } },
+      { pt: 'Olá', en: 'Hello', pron: { simple: 'oh-LAH', ipa: '/ɔˈla/' } },
+      { pt: 'Olá, como está?', en: 'Hello, how are you?', pron: { simple: 'oh-LAH, KOH-moh es-TAH?', ipa: '/ɔˈla ˈko.mu ˈɛʃta/' }, note: 'Polite greeting' },
+      { pt: 'Olá, como está?', en: 'Hello how are you', pron: { simple: 'oh-LAH, KOH-moh es-TAH?', ipa: '/ɔˈla ˈko.mu ˈɛʃta/' } },
+      { pt: 'Olá', en: 'Hi', pron: { simple: 'oh-LAH', ipa: '/ɔˈla/' } },
       { pt: 'Boa tarde', en: 'Good afternoon', pron: { simple: 'BOH-ah TAR-deh', ipa: '/ˈbo.ɐ ˈtaɾ.dɨ/' } },
       { pt: 'Boa noite', en: 'Good evening / night', pron: { simple: 'BOH-ah NOY-chee', ipa: '/ˈbo.ɐ ˈnoj.tɨ/' } },
       { pt: 'Como está?', en: 'How are you?', pron: { simple: 'KOH-moh es-TAH?', ipa: '/ˈko.mu ˈɛʃta/' }, note: 'Safe default with strangers' },

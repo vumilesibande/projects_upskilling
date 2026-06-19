@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PronunciationLine } from '@/components/PronunciationLine';
 import { SpeakButton } from '@/components/SpeakButton';
 import { lookupEnglish, splitSentences, type LookupMatch } from '@/lib/phrase-index';
+import { resolvePronunciation } from '@/lib/pronunciation';
 
 type SentenceResult = {
   id: string;
@@ -13,6 +14,7 @@ type SentenceResult = {
   note?: string;
   context?: string;
   source: 'phrasebook' | 'machine' | 'phrasebook-fallback';
+  pronApproximate?: boolean;
 };
 
 function pickPhrasebookMatch(sentence: string): LookupMatch | null {
@@ -23,11 +25,7 @@ function pickPhrasebookMatch(sentence: string): LookupMatch | null {
     return null;
   }
 
-  if (best.match === 'exact') {
-    return best;
-  }
-
-  if (best.match === 'partial') {
+  if (best.match === 'exact' || best.match === 'partial') {
     return best;
   }
 
@@ -38,8 +36,17 @@ function pickPhrasebookMatch(sentence: string): LookupMatch | null {
   return null;
 }
 
-function fromPhrasebookMatch(sentence: string, match: LookupMatch, fallback = false): SentenceResult {
+function attachPronunciation(result: Omit<SentenceResult, 'pronApproximate'>): SentenceResult {
+  const { pron, approximate } = resolvePronunciation(result.pt, result.pron);
   return {
+    ...result,
+    pron,
+    pronApproximate: approximate,
+  };
+}
+
+function fromPhrasebookMatch(sentence: string, match: LookupMatch, fallback = false): SentenceResult {
+  return attachPronunciation({
     id: `${sentence}-${match.pt}`,
     en: sentence,
     pt: match.pt,
@@ -47,7 +54,7 @@ function fromPhrasebookMatch(sentence: string, match: LookupMatch, fallback = fa
     note: fallback ? `Closest match in the app for: “${match.en}”` : match.note,
     context: match.context,
     source: fallback ? 'phrasebook-fallback' : 'phrasebook',
-  };
+  });
 }
 
 async function translateWithApi(text: string): Promise<string> {
@@ -69,24 +76,39 @@ async function translateWithApi(text: string): Promise<string> {
 async function translateSentence(sentence: string, index: number): Promise<SentenceResult> {
   const phrasebook = pickPhrasebookMatch(sentence);
 
-  if (phrasebook?.match === 'exact') {
-    return fromPhrasebookMatch(sentence, phrasebook);
+  if (phrasebook) {
+    const usePhrasebook =
+      phrasebook.match === 'exact' ||
+      (phrasebook.match === 'partial' && phrasebook.score >= 0.9) ||
+      normalizeForCompare(sentence) === normalizeForCompare(phrasebook.en);
+
+    if (usePhrasebook) {
+      return fromPhrasebookMatch(sentence, phrasebook);
+    }
   }
 
   try {
     const pt = await translateWithApi(sentence);
-    return {
+    return attachPronunciation({
       id: `machine-${index}-${sentence}`,
       en: sentence,
       pt,
       source: 'machine',
-    };
+    });
   } catch (error) {
     if (phrasebook) {
       return fromPhrasebookMatch(sentence, phrasebook, true);
     }
     throw error;
   }
+}
+
+function normalizeForCompare(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export function TranslatePanel() {
@@ -213,7 +235,9 @@ export function TranslatePanel() {
                 <p className="text-xl font-semibold text-foreground">{result.pt}</p>
                 <SpeakButton text={result.pt.split(' / ')[0] ?? result.pt} />
               </div>
-              {result.pron ? <PronunciationLine pron={result.pron} /> : null}
+              {result.pron ? (
+                <PronunciationLine pron={result.pron} approximate={result.pronApproximate} />
+              ) : null}
               {result.note ? <p className="mt-2 text-xs text-accent">{result.note}</p> : null}
               <p className="mt-2 text-xs text-muted">
                 {result.source === 'phrasebook'
@@ -241,6 +265,9 @@ export function TranslatePanel() {
                 >
                   <span className="block text-sm text-muted">{match.en}</span>
                   <span className="mt-1 block font-medium text-foreground">{match.pt}</span>
+                  {match.pron ? (
+                    <span className="mt-1 block font-mono text-xs text-muted">Say it like: {match.pron.simple}</span>
+                  ) : null}
                   <span className="mt-1 block text-xs text-muted">{match.context}</span>
                 </button>
               </li>
