@@ -232,6 +232,9 @@
         const id = btn.dataset.panel;
         showPanel(id);
         if (id === 'panel-home') renderHome();
+        if (id === 'panel-translate' && window.renderTranslatePanel) {
+          window.renderTranslatePanel($('#panel-translate'));
+        }
         if (id === 'panel-lessons') renderLessons();
         if (id === 'panel-vocab') renderVocabulary();
         if (id === 'panel-phrases') renderPhrasebook();

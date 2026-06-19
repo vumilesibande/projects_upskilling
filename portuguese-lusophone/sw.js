@@ -1,9 +1,10 @@
-const CACHE = 'portuguese-lusophone-v1';
+const CACHE = 'portuguese-lusophone-v2';
 const ASSETS = [
   './',
   './index.html',
   './css/main.css',
   './js/data.js',
+  './js/translate.js',
   './js/app.js',
   './manifest.webmanifest',
 ];
