@@ -10,15 +10,16 @@ const BLOCKED_PATTERNS = [
 ];
 
 const TRUSTED_CREATORS = new Set([
-  'MateCat',
-  'Microsoft',
-  'TED',
-  'Google',
-  'DeepL',
-  'Public Sector',
+  "MateCat",
+  "Microsoft",
+  "TED",
+  "Google",
+  "DeepL",
+  "Public Sector",
 ]);
 
 const GARBAGE_PATTERN = /^[A-Z0-9]{2,5}$/;
+const MIN_SEGMENT_SIMILARITY = 0.55;
 
 export function isBlockedTranslation(text: string): boolean {
   const trimmed = text.trim();
@@ -42,16 +43,45 @@ export function looksLikePortuguese(text: string): boolean {
   return true;
 }
 
+function normalizeWords(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function segmentSimilarity(a: string, b: string): number {
+  const left = new Set(normalizeWords(a));
+  const right = new Set(normalizeWords(b));
+
+  if (!left.size || !right.size) {
+    return 0;
+  }
+
+  let overlap = 0;
+  for (const token of left) {
+    if (right.has(token)) {
+      overlap += 1;
+    }
+  }
+
+  return overlap / Math.max(left.size, right.size);
+}
+
 type MemoryMatch = {
   segment?: string;
   translation?: string;
   quality?: number | string;
   match?: number;
-  'usage-count'?: number;
-  'created-by'?: string;
+  "usage-count"?: number;
+  "created-by"?: string;
 };
 
-export function pickBestMemoryMatch(matches: MemoryMatch[] | undefined, source: string): string | null {
+export function pickBestMemoryMatch(
+  matches: MemoryMatch[] | undefined,
+  source: string,
+): string | null {
   if (!matches?.length) {
     return null;
   }
@@ -65,15 +95,25 @@ export function pickBestMemoryMatch(matches: MemoryMatch[] | undefined, source: 
       continue;
     }
 
-    const segment = entry.segment?.trim().toLowerCase() ?? '';
+    const segment = entry.segment?.trim().toLowerCase() ?? "";
+    if (!segment) {
+      continue;
+    }
+
+    const similarity = segmentSimilarity(segment, sourceNorm);
+    if (similarity < MIN_SEGMENT_SIMILARITY) {
+      continue;
+    }
+
     let score = Number(entry.quality) || 0;
     score += (entry.match ?? 0) * 100;
-    score += (entry['usage-count'] ?? 0) * 3;
+    score += (entry["usage-count"] ?? 0) * 3;
+    score += similarity * 60;
 
-    const creator = entry['created-by'] ?? '';
+    const creator = entry["created-by"] ?? "";
     if (TRUSTED_CREATORS.has(creator)) {
       score += 40;
-    } else if (creator === 'Public Web') {
+    } else if (creator === "Public Web") {
       score -= 30;
     }
 
