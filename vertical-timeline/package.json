@@ -1,0 +1,18 @@
+{
+  "name": "vertical-timeline",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:css && npm run prefix:css",
+    "build:css": "sass src/scss/styles.scss styles.css",
+    "prefix:css": "postcss styles.css --use autoprefixer --replace",
+    "watch": "sass --watch src/scss/styles.scss styles.css",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "postcss-cli": "^11.0.0",
+    "sass": "^1.79.4"
+  }
+}

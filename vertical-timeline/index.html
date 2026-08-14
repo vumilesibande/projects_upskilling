@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vertical Timeline</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__header">
+        <h1>Vertical Timeline</h1>
+        <p>Click any event to expand more details.</p>
+      </header>
+
+      <section
+        class="timeline"
+        id="timeline"
+        aria-label="Project timeline"
+      ></section>
+    </main>
+
+    <template id="timeline-item-template">
+      <article class="timeline__item">
+        <button
+          class="timeline__point"
+          type="button"
+          aria-expanded="false"
+          aria-label="Toggle timeline event"
+        ></button>
+        <div class="timeline__card" tabindex="0">
+          <p class="timeline__date"></p>
+          <figure class="timeline__media" hidden>
+            <img class="timeline__image" src="" alt="" loading="lazy" />
+          </figure>
+          <h2 class="timeline__title"></h2>
+          <p class="timeline__summary"></p>
+          <div class="timeline__details" hidden></div>
+        </div>
+      </article>
+    </template>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
