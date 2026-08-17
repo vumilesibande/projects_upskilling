@@ -46,6 +46,46 @@ body {
   }
 }
 
+.timeline-toolbar {
+  margin-top: 24px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(180px, 280px) 1fr;
+  align-items: center;
+
+  &__label {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  &__select {
+    appearance: none;
+    border: 1px solid #334170;
+    background: #121a34;
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__status {
+    justify-self: end;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+}
+
+.timeline-empty {
+  margin-top: 16px;
+  color: var(--muted);
+}
+
 .timeline {
   position: relative;
   margin-top: 40px;
@@ -74,6 +114,19 @@ body {
 
     &.is-visible {
       animation: rise 360ms ease both;
+    }
+
+    &.is-current {
+      .timeline__card {
+        border-color: #6179dd;
+      }
+    }
+
+    &.is-active {
+      .timeline__card {
+        border-color: #7487db;
+        box-shadow: 0 8px 28px rgba(84, 104, 197, 0.22);
+      }
     }
   }
 
@@ -124,6 +177,19 @@ body {
     letter-spacing: 0.01em;
   }
 
+  &__badge {
+    display: inline-flex;
+    margin: 0 0 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(139, 157, 255, 0.18);
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
   &__title {
     margin: 0;
     font-size: 1.1rem;
@@ -132,6 +198,13 @@ body {
   &__summary {
     margin: 10px 0 0;
     color: var(--muted);
+  }
+
+  &__category {
+    margin: 10px 0 0;
+    color: #c1c9ef;
+    font-size: 0.86rem;
+    font-weight: 600;
   }
 
   &__media {
@@ -176,13 +249,49 @@ body {
 }
 
 @media (max-width: 680px) {
+  .page {
+    padding: 28px 14px 58px;
+  }
+
+  .timeline-toolbar {
+    grid-template-columns: 1fr;
+
+    &__status {
+      justify-self: start;
+    }
+  }
+
   .timeline {
+    margin-top: 28px;
     padding-left: 28px;
 
     &__point {
       left: -28px;
       width: 18px;
       height: 18px;
+    }
+
+    &__card {
+      padding: 14px;
+    }
+
+    &__media {
+      aspect-ratio: 16 / 10;
+    }
+  }
+}
+
+@media (min-width: 681px) and (max-width: 980px) {
+  .page {
+    max-width: 760px;
+  }
+
+  .timeline-toolbar {
+    grid-template-columns: auto minmax(170px, 1fr);
+
+    &__status {
+      grid-column: 1 / -1;
+      justify-self: start;
     }
   }
 }

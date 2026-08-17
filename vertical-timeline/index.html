@@ -10,36 +10,58 @@
     <main class="page">
       <header class="page__header">
         <h1>Vertical Timeline</h1>
-        <p>Click any event to expand more details.</p>
+        <p>Filter events and expand cards to read more details.</p>
       </header>
+
+      <section class="timeline-toolbar" aria-label="Timeline filters">
+        <label class="timeline-toolbar__label" for="timeline-category">
+          Category
+        </label>
+        <select id="timeline-category" class="timeline-toolbar__select">
+          <option value="all">All categories</option>
+        </select>
+        <p
+          id="timeline-status"
+          class="timeline-toolbar__status"
+          aria-live="polite"
+        ></p>
+      </section>
 
       <section
         class="timeline"
         id="timeline"
         aria-label="Project timeline"
+        role="list"
       ></section>
+
+      <p id="timeline-empty" class="timeline-empty" hidden>
+        No events match this category.
+      </p>
     </main>
 
     <template id="timeline-item-template">
-      <article class="timeline__item">
+      <article class="timeline__item" role="listitem">
         <button
           class="timeline__point"
           type="button"
           aria-expanded="false"
+          aria-controls=""
           aria-label="Toggle timeline event"
         ></button>
         <div class="timeline__card" tabindex="0">
-          <p class="timeline__date"></p>
+          <p class="timeline__date" aria-label="Event date"></p>
+          <p class="timeline__badge" hidden></p>
           <figure class="timeline__media" hidden>
             <img class="timeline__image" src="" alt="" loading="lazy" />
           </figure>
           <h2 class="timeline__title"></h2>
           <p class="timeline__summary"></p>
+          <p class="timeline__category"></p>
           <div class="timeline__details" hidden></div>
         </div>
       </article>
     </template>
 
-    <script src="./script.js"></script>
+    <script type="module" src="./script.js"></script>
   </body>
 </html>

@@ -6,6 +6,7 @@
     "build": "npm run build:css && npm run prefix:css",
     "build:css": "sass src/scss/styles.scss styles.css",
     "prefix:css": "postcss styles.css --use autoprefixer --replace",
+    "test": "node --test tests/timeline-core.test.mjs",
     "watch": "sass --watch src/scss/styles.scss styles.css",
     "serve": "python3 -m http.server 8080"
   },
