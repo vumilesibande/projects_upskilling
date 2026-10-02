@@ -26,9 +26,11 @@ function stylesPublic() {
 }
 
 function copyToPublic() {
-  return src([...staticAssets, ...staticDirs], { base: '.', allowEmpty: true }).pipe(
-    dest('public'),
-  );
+  return src([...staticAssets, ...staticDirs], {
+    base: '.',
+    allowEmpty: true,
+    encoding: false,
+  }).pipe(dest('public'));
 }
 
 function watchStyles() {
